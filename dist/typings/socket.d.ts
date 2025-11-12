@@ -1,0 +1,100 @@
+import type { Server, Socket } from 'socket.io';
+import type { TaskSet } from './tasks';
+import type { TaskModalData } from './room';
+interface PathCell {
+    id: number;
+    x: number;
+    y: number;
+    type: 'start' | 'end' | 'path' | 'star' | 'trap';
+    direction: 'right' | 'down' | 'left' | 'up' | null;
+}
+export type SocketIOServer = Server;
+export type SocketIOSocket = Socket;
+export interface PlayerInfo {
+    name: string;
+    isHost?: boolean;
+    avatarId?: string;
+    gender?: 'man' | 'woman';
+}
+export interface RoomInfo {
+    roomName: string;
+    playerName: string;
+    maxPlayers: number;
+    gameType: 'fly' | 'wheel' | 'minesweeper';
+    taskSet?: TaskSet | null;
+    avatar?: string;
+    gender?: 'man' | 'woman';
+}
+export interface JoinData {
+    roomId: string;
+    playerName: string;
+    avatar?: string;
+    gender?: 'man' | 'woman';
+}
+export interface GameAction {
+    type: string;
+    roomId: string;
+    [key: string]: unknown;
+}
+export interface SocketCallback {
+    (response?: unknown): void;
+}
+export interface Player {
+    id: string;
+    socketId: string;
+    name: string;
+    roomId: string | null;
+    color: string;
+    isHost: boolean;
+    avatarId: string;
+    gender?: 'man' | 'woman';
+    isConnected: boolean;
+    joinedAt: number;
+    lastSeen: number;
+    position: number;
+    score: number;
+    playerId: string;
+    completedTasks: string[];
+    achievements: string[];
+    isAI?: boolean;
+}
+export interface Room {
+    id: string;
+    name: string;
+    hostId: string;
+    players: Player[];
+    maxPlayers: number;
+    gameStatus: 'waiting' | 'playing' | 'ended';
+    gameType: 'fly' | 'wheel' | 'minesweeper';
+    createdAt: number;
+    lastActivity: number;
+    engine: unknown;
+    currentUser?: string;
+    boardPath?: PathCell[];
+    gameState?: {
+        playerPositions: {
+            [playerId: string]: number;
+        };
+        turnCount: number;
+        gamePhase: string;
+        startTime: number;
+        lastDiceRoll?: {
+            playerId: string;
+            playerName: string;
+            diceValue: number;
+            timestamp: number;
+        };
+        currentTask?: TaskModalData;
+        boardSize: number;
+        [key: string]: unknown;
+    };
+    taskSet?: TaskSet;
+    tasks?: string[];
+    [key: string]: unknown;
+}
+export interface GameData {
+    roomId: string;
+    [key: string]: unknown;
+}
+export {};
+//# sourceMappingURL=socket.d.ts.map
