@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # 飞行棋游戏服务器
+  coupon-game-server:
+    # 使用当前目录的 Dockerfile 构建镜像
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+
+    # 容器名称
+    container_name: coupon-game-server
+
+    # 镜像名称和标签
+    image: coupon-game-server:latest
+
+    # 端口映射 (主机端口:容器端口)
+    ports:
+      - "8871:8871"
+
+    # 环境变量
+    environment:
+      - NODE_ENV=production
+      - PORT=8871
+      # 如需要其他环境变量，可在这里添加或使用 .env 文件
+      # - DATABASE_URL=${DATABASE_URL}
+      # - REDIS_URL=${REDIS_URL}
+
+    # 从 .env 文件加载环境变量（可选）
+    # env_file:
+    #   - .env
+
+    # 重启策略
+    restart: unless-stopped
+
+    # 健康检查
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:8871/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+    # 资源限制（可选）
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+    # 网络配置
+    networks:
+      - game-network
+
+    # 卷挂载（持久化 PM2 日志）
+    volumes:
+      - ./logs:/app/logs
+
+    # 日志配置
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# 网络定义
+networks:
+  game-network:
+    driver: bridge
+
+# 卷定义（如需持久化数据可使用）
+# volumes:
+#   game-data:

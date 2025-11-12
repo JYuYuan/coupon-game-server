@@ -19,22 +19,283 @@ cd server
 npm install socket.io-client
 ```
 
+## 🐳 Docker 部署
+
+### 前置要求
+- 安装 [Docker](https://www.docker.com/get-started)
+- 安装 [Docker Compose](https://docs.docker.com/compose/install/) (可选，用于一键部署)
+
+### 方式 1: 使用 Docker Compose（推荐）
+
+#### 快速启动
+```bash
+# 构建并启动服务
+docker-compose up -d
+
+# 查看服务状态
+docker-compose ps
+
+# 查看日志
+docker-compose logs -f
+
+# 停止服务
+docker-compose down
+```
+
+#### 重新构建镜像
+```bash
+# 重新构建并启动
+docker-compose up -d --build
+
+# 或者先停止，再重新构建并启动
+docker-compose down
+docker-compose build --no-cache
+docker-compose up -d
+```
+
+### 方式 2: 使用 Docker 命令
+
+#### 构建镜像
+```bash
+# 构建生产镜像
+docker build -t coupon-game-server:latest .
+
+# 构建并指定标签
+docker build -t coupon-game-server:1.0.0 .
+```
+
+#### 运行容器
+```bash
+# 基本运行
+docker run -d \
+  --name coupon-game-server \
+  -p 8871:8871 \
+  coupon-game-server:latest
+
+# 使用环境变量运行
+docker run -d \
+  --name coupon-game-server \
+  -p 8871:8871 \
+  -e NODE_ENV=production \
+  -e PORT=8871 \
+  coupon-game-server:latest
+
+# 使用 .env 文件运行
+docker run -d \
+  --name coupon-game-server \
+  -p 8871:8871 \
+  --env-file .env \
+  coupon-game-server:latest
+```
+
+#### 容器管理
+```bash
+# 查看运行中的容器
+docker ps
+
+# 查看所有容器
+docker ps -a
+
+# 查看容器日志
+docker logs -f coupon-game-server
+
+# 进入容器
+docker exec -it coupon-game-server sh
+
+# 停止容器
+docker stop coupon-game-server
+
+# 启动容器
+docker start coupon-game-server
+
+# 重启容器
+docker restart coupon-game-server
+
+# 删除容器
+docker rm coupon-game-server
+
+# 删除镜像
+docker rmi coupon-game-server:latest
+```
+
+### 镜像特性
+
+✨ **多阶段构建**: 分离构建和运行环境，减小镜像体积
+🔒 **安全性**: 使用非 root 用户运行应用
+💚 **健康检查**: 内置健康检查机制，自动监控服务状态
+📦 **轻量级**: 基于 Alpine Linux，镜像体积小
+🚀 **生产就绪**: 包含资源限制、日志管理等生产环境最佳实践
+🔄 **PM2 集成**: 使用 PM2 runtime 进行进程管理，提供自动重启和日志管理
+
+### PM2 特性（生产环境）
+
+🔄 **自动重启**: 应用崩溃时自动重启
+📊 **负载均衡**: 支持 cluster 模式，充分利用多核 CPU
+📝 **日志管理**: 自动管理日志文件，防止磁盘空间耗尽
+💾 **内存监控**: 超过内存限制自动重启，防止内存泄漏
+⚡ **零停机重启**: 使用 `pm2 reload` 实现零停机更新
+🎯 **进程监控**: 实时监控 CPU、内存使用情况
+📈 **性能指标**: 提供详细的性能统计和监控
+
+### 日志文件位置
+
+PM2 会自动将日志写入 `logs/` 目录：
+- `logs/out.log` - 标准输出日志
+- `logs/error.log` - 错误日志
+- `logs/combined.log` - 合并日志
+
+在 Docker 环境中，日志会通过卷挂载持久化到主机的 `./logs` 目录。
+
+### 环境变量配置
+
+可以通过以下方式配置环境变量：
+
+1. **docker-compose.yml** 中的 `environment` 部分
+2. 创建 `.env` 文件并在 `docker-compose.yml` 中使用 `env_file`
+3. Docker 运行时使用 `-e` 参数
+
+常用环境变量：
+- `NODE_ENV`: 运行环境（默认: production）
+- `PORT`: 服务端口（默认: 8871）
+
+### 监控和调试
+
+```bash
+# 查看容器资源使用情况
+docker stats coupon-game-server
+
+# 查看容器详细信息
+docker inspect coupon-game-server
+
+# 查看容器健康检查状态
+docker inspect --format='{{json .State.Health}}' coupon-game-server | jq
+
+# 实时查看日志
+docker-compose logs -f --tail=100
+```
+
+### 故障排除
+
+#### 端口已被占用
+```bash
+# 查看端口占用情况
+lsof -i :8871
+
+# 或使用不同的端口
+docker run -d -p 3002:8871 coupon-game-server:latest
+```
+
+#### 容器无法启动
+```bash
+# 查看详细错误日志
+docker logs coupon-game-server
+
+# 检查容器状态
+docker inspect coupon-game-server
+```
+
+#### 重新构建镜像
+```bash
+# 清理缓存并重新构建
+docker-compose build --no-cache
+docker-compose up -d
+```
+
 ## 使用方法
 
-### 1. 启动游戏服务器
+### 方式 1: 直接运行（开发环境）
+
+#### 启动游戏服务器
 
 首先需要启动游戏服务器：
 
 ```bash
-cd server
-node index.js
+# 开发模式（支持热重载）
+npm run dev
+
+# 或者先构建再运行
+npm run build
+npm start
 ```
 
-服务器将在 http://localhost:3001 上运行。
+服务器将在 http://localhost:8871 上运行。
 
-### 2. 运行模拟器
+### 方式 2: 使用 PM2（生产环境推荐）
 
-#### 交互式命令行模式（推荐）
+PM2 是一个强大的进程管理器，提供自动重启、负载均衡、日志管理等功能。
+
+#### 安装依赖
+```bash
+npm install
+```
+
+#### 构建项目
+```bash
+npm run build
+```
+
+#### 使用 PM2 启动
+```bash
+# 开发环境启动
+npm run pm2:start
+
+# 生产环境启动
+npm run pm2:start:prod
+
+# 查看运行状态
+npm run pm2:status
+
+# 查看日志
+npm run pm2:logs
+
+# 实时监控
+npm run pm2:monit
+```
+
+#### PM2 管理命令
+```bash
+# 重启服务
+npm run pm2:restart
+
+# 重载服务（零停机重启）
+npm run pm2:reload
+
+# 停止服务
+npm run pm2:stop
+
+# 删除服务
+npm run pm2:delete
+```
+
+#### 高级 PM2 命令
+```bash
+# 查看详细信息
+pm2 show coupon-game-server
+
+# 查看实时日志
+pm2 logs coupon-game-server --lines 100
+
+# 清空日志
+pm2 flush
+
+# 保存当前进程列表
+pm2 save
+
+# 设置开机自启动
+pm2 startup
+pm2 save
+
+# 更新 PM2
+pm2 update
+```
+
+### 方式 3: 使用 Docker（推荐部署方式）
+
+Docker 方式详见上面的 [🐳 Docker 部署](#-docker-部署) 章节。
+
+## 机器人模拟器使用
+
+### 交互式命令行模式（推荐）
 
 ```bash
 node simulator-cli.js

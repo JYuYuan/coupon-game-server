@@ -149,7 +149,7 @@ https://couple-game-server.onrender.com/stats
 
 ```typescript
 // 之前（本地开发）
-const SOCKET_URL = 'http://localhost:3001'
+const SOCKET_URL = 'http://localhost:8871'
 
 // 更新为（生产环境）
 const SOCKET_URL = 'https://couple-game-server.onrender.com'
@@ -159,7 +159,7 @@ const SOCKET_URL = 'https://couple-game-server.onrender.com'
 
 ```typescript
 const SOCKET_URL = __DEV__
-  ? 'http://localhost:3001'  // 开发环境
+  ? 'http://localhost:8871'  // 开发环境
   : 'https://couple-game-server.onrender.com'  // 生产环境
 ```
 
@@ -323,7 +323,7 @@ Render 会自动设置基本环境变量，如需添加自定义变量：
 **可能原因**：
 - ✅ 检查 `index.ts` 中的端口配置：
   ```typescript
-  const PORT = process.env.PORT || 3001
+  const PORT = process.env.PORT || 8871
   ```
 - ✅ 确认服务器正确启动
 - ✅ 查看 Render 日志是否有错误

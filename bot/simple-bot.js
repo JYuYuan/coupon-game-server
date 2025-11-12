@@ -5,7 +5,7 @@ import io from 'socket.io-client'
 
 class SimpleBot {
   constructor(options = {}) {
-    this.serverUrl = options.serverUrl || 'http://localhost:3001'
+    this.serverUrl = options.serverUrl || 'http://localhost:8871'
     this.playerName = options.playerName || `Bot_${Math.random().toString(36).substring(2, 6)}`
     this.playerId = Math.random().toString(36).substring(2, 8).toUpperCase()
     this.roomId = options.roomId || null

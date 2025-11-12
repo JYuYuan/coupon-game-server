@@ -57,7 +57,7 @@ app.get('/stats', (req, res) => {
 // 注册 socket.io 的所有事件
 registerSocketHandlers(io)
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT || 8871
 server.listen(PORT, () => {
   console.log(`🚀 Socket.io 游戏服务器已启动: http://localhost:${PORT}`)
   console.log(`📊 健康检查端点: http://localhost:${PORT}/health`)

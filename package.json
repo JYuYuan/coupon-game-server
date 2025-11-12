@@ -10,6 +10,15 @@
     "dev": "tsx watch index.ts",
     "dev:build": "tsc --watch",
     "clean": "rm -rf dist",
+    "pm2:start": "pm2 start ecosystem.config.cjs",
+    "pm2:start:prod": "pm2 start ecosystem.config.cjs --env production",
+    "pm2:stop": "pm2 stop coupon-game-server",
+    "pm2:restart": "pm2 restart coupon-game-server",
+    "pm2:reload": "pm2 reload coupon-game-server",
+    "pm2:delete": "pm2 delete coupon-game-server",
+    "pm2:logs": "pm2 logs coupon-game-server",
+    "pm2:monit": "pm2 monit",
+    "pm2:status": "pm2 status",
     "bot": "node bot/simple-bot.js",
     "bot:create": "node bot/simple-bot.js create",
     "bot:create:2": "node bot/simple-bot.js create 2",
@@ -21,6 +30,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
+    "pm2": "^6.0.13",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "uuid": "^13.0.0"

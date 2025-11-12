@@ -7,3 +7,5 @@ dist
 dump.rdb
 .idea
 .vscode
+logs
+.pm2
